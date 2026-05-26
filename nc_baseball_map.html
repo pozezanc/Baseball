@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baseball Teams — NC, SC & VA · Distances from Rolesville & Apex</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f4f3ee; color: #1a1a18; padding: 2rem 1rem; }
+    h1 { font-size: 20px; font-weight: 500; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 13px; color: #66665e; margin-bottom: 1.5rem; }
+    .container { max-width: 820px; margin: 0 auto; }
+    .card { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 0.75rem; border-top: 0.5px solid rgba(0,0,0,0.1); font-size: 12px; color: #66665e; margin-top: 0.5rem; align-items: center; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-label { font-size: 11px; font-weight: 500; color: #99998f; text-transform: uppercase; letter-spacing: .04em; }
+    .legend-note { margin-left: auto; font-size: 11px; color: #99998f; }
+
+    .table-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; overflow: hidden; }
+    .table-header { padding: 0.65rem 1.25rem; border-bottom: 0.5px solid rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .table-title { font-size: 13px; font-weight: 500; color: #66665e; white-space: nowrap; }
+    .btn-group { display: flex; gap: 5px; align-items: center; }
+    .divider { width: 0.5px; height: 20px; background: rgba(0,0,0,0.12); margin: 0 4px; }
+
+    button { font-family: inherit; font-size: 12px; padding: 4px 11px; cursor: pointer; background: transparent; border: 0.5px solid rgba(0,0,0,0.22); border-radius: 8px; color: #1a1a18; transition: background 0.12s; }
+    button:hover { background: #f4f3ee; }
+    button.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+
+    select { font-family: inherit; font-size: 12px; padding: 4px 28px 4px 10px; cursor: pointer; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E") no-repeat right 8px center; border: 0.5px solid rgba(0,0,0,0.22); border-radius: 8px; color: #1a1a18; appearance: none; -webkit-appearance: none; }
+    select:focus { outline: none; border-color: rgba(0,0,0,0.4); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+    thead tr { background: #f9f8f4; }
+    th { padding: 7px 12px; text-align: left; font-weight: 500; color: #66665e; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+    th.r { text-align: right; }
+    td { padding: 8px 12px; border-top: 0.5px solid rgba(0,0,0,0.07); vertical-align: middle; }
+    td.r { text-align: right; font-variant-numeric: tabular-nums; }
+    .team-name { font-weight: 500; color: #1a1a18; line-height: 1.3; }
+    .team-city { font-weight: 400; font-size: 11px; color: #99998f; }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 8px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+    .state-tag { display: inline-block; font-size: 11px; font-weight: 600; color: #99998f; }
+    .chart-wrap { position: relative; height: 420px; }
+    .footer { font-size: 11px; color: #99998f; text-align: center; margin-top: 1rem; }
+    @media (max-width: 500px) { .chart-wrap { height: 300px; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Baseball Teams — NC, SC &amp; VA</h1>
+  <p class="subtitle">Distances from Rolesville and Apex &nbsp;·&nbsp; MiLB affiliated + Coastal Plain League &nbsp;·&nbsp; Straight-line miles</p>
+
+  <div class="card">
+    <div class="chart-wrap"><canvas id="mapChart"></canvas></div>
+    <div class="legend">
+      <span class="legend-label">MiLB ●</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#7F77DD"></span>Triple-A</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>Double-A</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>High-A</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#BA7517"></span>Low-A</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#D85A30"></span>Single-A</span>
+      <span class="legend-label" style="margin-left:4px">CPL ▲</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#D4537E"></span>Collegiate</span>
+      <span class="legend-item"><span style="font-size:14px;color:#1a1a18;line-height:1">★</span>Your cities</span>
+      <span class="legend-note">Hover for distances</span>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-title">Sort:</span>
+      <div class="btn-group">
+        <button id="btn-rolesville" onclick="sortTable('rolesville')">Rolesville</button>
+        <button id="btn-apex" onclick="sortTable('apex')">Apex</button>
+      </div>
+      <div class="divider"></div>
+      <span class="table-title">State:</span>
+      <select id="state-select" onchange="filterState(this.value)">
+        <option value="all">All states</option>
+        <option value="NC">North Carolina</option>
+        <option value="SC">South Carolina</option>
+        <option value="VA">Virginia</option>
+      </select>
+      <div class="divider"></div>
+      <span class="table-title">League:</span>
+      <div class="btn-group">
+        <button id="btn-all" onclick="filterLeague('all')">All</button>
+        <button id="btn-milb" onclick="filterLeague('milb')">MiLB</button>
+        <button id="btn-cpl" onclick="filterLeague('cpl')">CPL</button>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30%">Team</th>
+          <th style="width:7%">State</th>
+          <th style="width:10%">League</th>
+          <th style="width:14%">Level</th>
+          <th class="r" style="width:20%" id="hd-rolesville">From Rolesville ↓</th>
+          <th class="r" style="width:19%" id="hd-apex">From Apex</th>
+        </tr>
+      </thead>
+      <tbody id="teamTable"></tbody>
+    </table>
+    <div style="padding:8px 12px;border-top:0.5px solid rgba(0,0,0,0.07);font-size:12px;color:#99998f;" id="row-count"></div>
+  </div>
+
+  <p class="footer">MiLB data: 2026 season &nbsp;·&nbsp; CPL: Coastal Plain League (summer collegiate) &nbsp;·&nbsp; Generated with Claude / Cowork</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const ALL_TEAMS = [
+  // NC MiLB
+  { name: "Durham Bulls",             city: "Durham",        state: "NC", league: "MiLB", level: "Triple-A",  lat: 35.9940, lon: -78.8986, fromRolesville: 25.2,  fromApex: 18.3  },
+  { name: "Charlotte Knights",        city: "Charlotte",     state: "NC", league: "MiLB", level: "Triple-A",  lat: 35.2271, lon: -80.8431, fromRolesville: 142.4, fromApex: 117.4 },
+  { name: "Asheville Tourists",       city: "Asheville",     state: "NC", league: "MiLB", level: "High-A",    lat: 35.5951, lon: -82.5515, fromRolesville: 230.6, fromApex: 208.0 },
+  { name: "Greensboro Grasshoppers",  city: "Greensboro",    state: "NC", league: "MiLB", level: "High-A",    lat: 36.0726, lon: -79.7920, fromRolesville: 75.3,  fromApex: 57.7  },
+  { name: "Winston-Salem Dash",       city: "Winston-Salem", state: "NC", league: "MiLB", level: "High-A",    lat: 36.0999, lon: -80.2442, fromRolesville: 100.6, fromApex: 82.0  },
+  { name: "Fayetteville Woodpeckers", city: "Fayetteville",  state: "NC", league: "MiLB", level: "Low-A",     lat: 35.0527, lon: -78.8784, fromRolesville: 64.5,  fromApex: 47.0  },
+  { name: "Hickory Crawdads",         city: "Hickory",       state: "NC", league: "MiLB", level: "Low-A",     lat: 35.7332, lon: -81.3412, fromRolesville: 162.1, fromApex: 139.7 },
+  { name: "Kannapolis Cannon Ballers",city: "Kannapolis",    state: "NC", league: "MiLB", level: "Low-A",     lat: 35.4876, lon: -80.6217, fromRolesville: 125.1, fromApex: 100.9 },
+  { name: "Wilson Warbirds",          city: "Wilson",        state: "NC", league: "MiLB", level: "Single-A",  lat: 35.7213, lon: -77.9152, fromRolesville: 33.4,  fromApex: 52.5  },
+  // NC CPL
+  { name: "Zebulon Devil Dogz",            city: "Zebulon",       state: "NC", league: "CPL", level: "Collegiate", lat: 35.8223, lon: -78.3159, fromRolesville: 10.5,  fromApex: 30.6  },
+  { name: "Holly Springs Salamanders",     city: "Holly Springs", state: "NC", league: "CPL", level: "Collegiate", lat: 35.6523, lon: -78.8340, fromRolesville: 28.1,  fromApex: 5.6   },
+  { name: "Greenville Yard Gnomes",        city: "Greenville",    state: "NC", league: "CPL", level: "Collegiate", lat: 35.6127, lon: -77.3664, fromRolesville: 64.8,  fromApex: 83.7  },
+  { name: "Asheboro Zookeepers",           city: "Asheboro",      state: "NC", league: "CPL", level: "Collegiate", lat: 35.7079, lon: -79.8136, fromRolesville: 77.4,  fromApex: 54.1  },
+  { name: "High Point-Thomasville HiToms", city: "High Point",    state: "NC", league: "CPL", level: "Collegiate", lat: 35.9557, lon: -80.0053, fromRolesville: 86.6,  fromApex: 66.5  },
+  { name: "Morehead City Marlins",         city: "Morehead City", state: "NC", league: "CPL", level: "Collegiate", lat: 34.7232, lon: -76.7260, fromRolesville: 128.0, fromApex: 138.7 },
+  { name: "Wilmington Sharks",             city: "Wilmington",    state: "NC", league: "CPL", level: "Collegiate", lat: 34.2257, lon: -77.9447, fromRolesville: 120.7, fromApex: 116.1 },
+  { name: "Boone Bigfoots",               city: "Boone",         state: "NC", league: "CPL", level: "Collegiate", lat: 36.2168, lon: -81.6746, fromRolesville: 180.8, fromApex: 161.4 },
+  { name: "Forest City Owls",             city: "Forest City",   state: "NC", league: "CPL", level: "Collegiate", lat: 35.3360, lon: -81.8651, fromRolesville: 195.6, fromApex: 171.7 },
+  // SC MiLB
+  { name: "Charleston RiverDogs",    city: "Charleston",   state: "SC", league: "MiLB", level: "Low-A",   lat: 32.7791, lon: -79.9394, fromRolesville: 233.0, fromApex: 213.3 },
+  { name: "Columbia Fireflies",      city: "Columbia",     state: "SC", league: "MiLB", level: "Low-A",   lat: 34.0007, lon: -81.0348, fromRolesville: 197.2, fromApex: 172.2 },
+  { name: "Greenville Drive",        city: "Greenville",   state: "SC", league: "MiLB", level: "High-A",  lat: 34.8526, lon: -82.3940, fromRolesville: 233.7, fromApex: 208.9 },
+  { name: "Myrtle Beach Pelicans",   city: "Myrtle Beach", state: "SC", league: "MiLB", level: "Low-A",   lat: 33.6891, lon: -78.8867, fromRolesville: 156.1, fromApex: 141.2 },
+  { name: "Hub City Spartanburgers", city: "Spartanburg",  state: "SC", league: "MiLB", level: "High-A",  lat: 34.9496, lon: -81.9320, fromRolesville: 206.8, fromApex: 181.9 },
+  // SC CPL
+  { name: "Florence Flamingos",        city: "Florence",  state: "SC", league: "CPL", level: "Collegiate", lat: 34.1954, lon: -79.7626, fromRolesville: 140.2, fromApex: 118.1 },
+  { name: "Lexington County Blowfish", city: "Lexington", state: "SC", league: "CPL", level: "Collegiate", lat: 33.9815, lon: -81.2368, fromRolesville: 206.7, fromApex: 181.5 },
+  // VA MiLB
+  { name: "Norfolk Tides",             city: "Norfolk",          state: "VA", league: "MiLB", level: "Triple-A", lat: 36.8508, lon: -76.0122, fromRolesville: 150.4, fromApex: 175.9 },
+  { name: "Richmond Flying Squirrels", city: "Richmond",         state: "VA", league: "MiLB", level: "Double-A", lat: 37.5638, lon: -77.4756, fromRolesville: 125.8, fromApex: 147.7 },
+  { name: "Fredericksburg Nationals",  city: "Fredericksburg",   state: "VA", league: "MiLB", level: "Low-A",    lat: 38.3032, lon: -77.4605, fromRolesville: 173.5, fromApex: 193.4 },
+  { name: "Hill City Howlers",         city: "Lynchburg",        state: "VA", league: "MiLB", level: "Low-A",    lat: 37.4138, lon: -79.1422, fromRolesville: 109.9, fromApex: 117.3 },
+  { name: "Salem RidgeYaks",           city: "Salem",            state: "VA", league: "MiLB", level: "Low-A",    lat: 37.2852, lon: -80.0547, fromRolesville: 129.4, fromApex: 126.4 },
+  // VA CPL
+  { name: "Martinsville Mustangs",    city: "Martinsville",    state: "VA", league: "CPL", level: "Collegiate", lat: 36.6918, lon: -79.8731, fromRolesville: 95.1,  fromApex: 87.4  },
+  { name: "Peninsula Pilots",         city: "Hampton",         state: "VA", league: "CPL", level: "Collegiate", lat: 37.0299, lon: -76.3452, fromRolesville: 140.1, fromApex: 165.7 },
+  { name: "Tri-City Chili Peppers",   city: "Colonial Heights",state: "VA", league: "CPL", level: "Collegiate", lat: 37.2596, lon: -77.4058, fromRolesville: 109.3, fromApex: 132.5 },
+];
+
+const REFS = [
+  { name: "Rolesville ★", lat: 35.9212, lon: -78.4572 },
+  { name: "Apex ★",       lat: 35.7327, lon: -78.8503 },
+];
+
+const LEVEL_COLOR = { "Triple-A": "#7F77DD", "Double-A": "#378ADD", "High-A": "#1D9E75", "Low-A": "#BA7517", "Single-A": "#D85A30" };
+const LEVEL_BG    = { "Triple-A": "#EEEDFE", "Double-A": "#E6F1FB", "High-A": "#E1F5EE", "Low-A": "#FAEEDA", "Single-A": "#FAECE7", "Collegiate": "#FBEAF0" };
+const LEVEL_TEXT  = { "Triple-A": "#3C3489", "Double-A": "#185FA5", "High-A": "#085041", "Low-A": "#633806", "Single-A": "#712B13", "Collegiate": "#72243E" };
+const STATE_COLORS = { NC: "#1D9E75", SC: "#BA7517", VA: "#7F77DD" };
+
+let sortKey = 'rolesville', stateKey = 'all', leagueKey = 'all';
+let chart;
+
+function getFiltered() {
+  return ALL_TEAMS.filter(t =>
+    (stateKey === 'all' || t.state === stateKey) &&
+    (leagueKey === 'all' || t.league.toLowerCase() === leagueKey)
+  );
+}
+
+function buildDatasets(teams) {
+  const levels = ["Triple-A", "Double-A", "High-A", "Low-A", "Single-A"];
+  const ds = levels.map(level => ({
+    label: level,
+    data: teams.filter(t => t.league === 'MiLB' && t.level === level)
+               .map(t => ({ x: t.lon, y: t.lat, name: t.name, state: t.state, fromRolesville: t.fromRolesville, fromApex: t.fromApex })),
+    backgroundColor: LEVEL_COLOR[level], borderColor: LEVEL_COLOR[level],
+    pointRadius: 7, pointHoverRadius: 10, pointStyle: 'circle',
+  }));
+  ds.push({
+    label: 'CPL',
+    data: teams.filter(t => t.league === 'CPL')
+               .map(t => ({ x: t.lon, y: t.lat, name: t.name, state: t.state, fromRolesville: t.fromRolesville, fromApex: t.fromApex })),
+    backgroundColor: '#D4537E', borderColor: '#D4537E',
+    pointRadius: 7, pointHoverRadius: 10, pointStyle: 'triangle',
+  });
+  ds.push({
+    label: 'refs',
+    data: REFS.map(r => ({ x: r.lon, y: r.lat, name: r.name })),
+    backgroundColor: '#1a1a18', borderColor: '#fff', borderWidth: 2,
+    pointRadius: 9, pointHoverRadius: 12, pointStyle: 'star',
+  });
+  return ds;
+}
+
+const ctx = document.getElementById('mapChart').getContext('2d');
+chart = new Chart(ctx, {
+  type: 'scatter',
+  data: { datasets: buildDatasets(ALL_TEAMS) },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      x: { min: -83.5, max: -75.2,
+        ticks: { callback: v => Math.abs(v).toFixed(1) + '°W', color: '#999', font: { size: 10 }, maxTicksLimit: 9 },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      },
+      y: { min: 32.2, max: 38.8,
+        ticks: { callback: v => (+v).toFixed(1) + '°N', color: '#999', font: { size: 10 }, maxTicksLimit: 8 },
+        grid: { color: 'rgba(0,0,0,0.05)' }
+      }
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: () => '',
+          label: c => {
+            const d = c.raw;
+            if (d.fromRolesville !== undefined)
+              return [`  ${d.name} (${d.state})`, `  From Rolesville: ${d.fromRolesville} mi`, `  From Apex: ${d.fromApex} mi`];
+            return `  ${d.name}`;
+          }
+        },
+        bodyFont: { size: 13 }, padding: 10,
+      }
+    }
+  }
+});
+
+function refreshChart() {
+  chart.data.datasets = buildDatasets(getFiltered());
+  chart.update();
+}
+
+function sortTable(key) {
+  sortKey = key;
+  document.getElementById('btn-rolesville').classList.toggle('active', key === 'rolesville');
+  document.getElementById('btn-apex').classList.toggle('active', key === 'apex');
+  document.getElementById('hd-rolesville').textContent = 'From Rolesville' + (key === 'rolesville' ? ' ↓' : '');
+  document.getElementById('hd-apex').textContent = 'From Apex' + (key === 'apex' ? ' ↓' : '');
+  renderTable();
+}
+
+function filterState(val) {
+  stateKey = val;
+  refreshChart();
+  renderTable();
+}
+
+function filterLeague(val) {
+  leagueKey = val;
+  document.getElementById('btn-all').classList.toggle('active', val === 'all');
+  document.getElementById('btn-milb').classList.toggle('active', val === 'milb');
+  document.getElementById('btn-cpl').classList.toggle('active', val === 'cpl');
+  refreshChart();
+  renderTable();
+}
+
+function renderTable() {
+  const teams = getFiltered().slice().sort((a, b) =>
+    sortKey === 'rolesville' ? a.fromRolesville - b.fromRolesville : a.fromApex - b.fromApex
+  );
+  const leagueBadge = t => {
+    const bg = t.league === 'MiLB' ? '#E6F1FB' : '#FBEAF0';
+    const col = t.league === 'MiLB' ? '#185FA5' : '#993556';
+    return `<span class="badge" style="background:${bg};color:${col}">${t.league}</span>`;
+  };
+  const levelBadge = t => `<span class="badge" style="background:${LEVEL_BG[t.level]};color:${LEVEL_TEXT[t.level]}">${t.level}</span>`;
+  const stateColor = { NC: '#085041', SC: '#633806', VA: '#3C3489' };
+  const stateBg    = { NC: '#E1F5EE', SC: '#FAEEDA', VA: '#EEEDFE' };
+
+  document.getElementById('teamTable').innerHTML = teams.map(t => `
+    <tr>
+      <td><span class="team-name">${t.name}</span><br><span class="team-city">${t.city}</span></td>
+      <td><span class="badge" style="background:${stateBg[t.state]};color:${stateColor[t.state]}">${t.state}</span></td>
+      <td>${leagueBadge(t)}</td>
+      <td>${levelBadge(t)}</td>
+      <td class="r" style="color:${sortKey==='rolesville'?'#1a1a18':'#99998f'};font-weight:${sortKey==='rolesville'?500:400}">${t.fromRolesville} mi</td>
+      <td class="r" style="color:${sortKey==='apex'?'#1a1a18':'#99998f'};font-weight:${sortKey==='apex'?500:400}">${t.fromApex} mi</td>
+    </tr>`).join('');
+  document.getElementById('row-count').textContent = `Showing ${teams.length} team${teams.length !== 1 ? 's' : ''}`;
+}
+
+sortTable('rolesville');
+filterLeague('all');
+</script>
+</body>
+</html>
